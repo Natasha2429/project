@@ -1,0 +1,529 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OLP - Online Learning Platform</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #eef1f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #3e5976;
+      color: white;
+      padding: 15px;
+    }
+
+    nav a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .page {
+      display: none;
+      padding: 20px;
+    }
+
+    form {
+      display: inline-block;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 90%;
+    }
+
+    button {
+      background-color: #3e5976;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #2f4562;
+    }
+
+    .course-box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px auto;
+      width: 80%;
+      background: #f9f9f9;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header id="main-header" style="display: none;">
+    <h1>OLP</h1>
+    <nav>
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('upload')">Upload Course</a>
+      <a onclick="showPage('courses')">View Courses</a>
+      <a onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Login 
+  <section id="login" class="page">
+    <h2>Login</h2>
+    <form id="login-form">
+      <input type="email" id="login-email" placeholder="Email" required>
+      <input type="password" id="login-password" placeholder="Password" required>
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a onclick="showPage('signup')">Sign Up</a></p>
+    </form>
+  </section>
+
+  <!-- Signup 
+  <section id="signup" class="page">
+    <h2>Sign Up</h2>
+    <form id="signup-form">
+      <input type="email" id="signup-email" placeholder="Email" required>
+      <input type="password" id="signup-password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+      <p>Already have an account? <a onclick="showPage('login')">Login</a></p>
+    </form>
+  </section>
+
+  <!-- Home 
+  <section id="home" class="page">
+    <h2>Welcome to OLP</h2>
+    <p>Your platform to upload and view course PDFs.</p>
+    <button onclick="showPage('upload')">Upload Course</button>
+    <button onclick="showPage('courses')">Browse Courses</button>
+  </section>
+
+  <!-- Upload Course 
+  <section id="upload" class="page">
+    <h2>Upload a Course</h2>
+    <form id="upload-form">
+      <input type="text" id="course-title" placeholder="Course Title" required>
+      <input type="file" id="course-pdf" accept="application/pdf" required>
+      <button type="submit">Upload</button>
+    </form>
+  </section>
+
+  <!-- View Courses 
+  <section id="courses" class="page">
+    <h2>Available Courses</h2>
+    <div id="course-list"></div>
+  </section>
+
+  <script>
+    // Show one page, hide others
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+      });
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Initial Page Load - show login/signup
+    if (localStorage.getItem('loggedIn') === 'true') {
+      document.getElementById('main-header').style.display = 'block';
+      showPage('home');
+    } else {
+      showPage('login');
+    }
+
+    // Signup
+    document.getElementById("signup-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+      localStorage.setItem("user", JSON.stringify({ email, password }));
+      alert("Signup successful! Please login.");
+      showPage("login");
+    });
+
+    // Login
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user && user.email === email && user.password === password) {
+        alert("Login successful!");
+        localStorage.setItem('loggedIn', 'true');
+        document.getElementById('main-header').style.display = 'block';
+        showPage('home');
+      } else {
+        alert("Invalid credentials!");
+      }
+    });
+
+    // Logout
+    function logout() {
+      localStorage.setItem('loggedIn', 'false');
+      document.getElementById('main-header').style.display = 'none';
+      showPage('login');
+    }
+
+    // Upload Course
+    document.getElementById("upload-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const title = document.getElementById("course-title").value;
+      const fileInput = document.getElementById("course-pdf");
+      const file = fileInput.files[0];
+
+      if (!file) return alert("Please select a PDF");
+
+      const reader = new FileReader();
+      reader.onload = function() {
+        const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+        courses.push({ title: title, pdf: reader.result });
+        localStorage.setItem("courses", JSON.stringify(courses));
+        alert("Course uploaded!");
+        document.getElementById("upload-form").reset();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Display Courses
+    function displayCourses() {
+      const courseList = document.getElementById("course-list");
+      courseList.innerHTML = "";
+      const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+
+      if (courses.length === 0) {
+        courseList.innerHTML = "<p>No courses available.</p>";
+        return;
+      }
+
+      courses.forEach((course, index) => {
+        const div = document.createElement("div");
+        div.className = "course-box";
+        div.innerHTML = `
+          <h3>${course.title}</h3>
+          <a href="${course.pdf}" download target="_blank">Download PDF</a><br>
+          <button onclick="deleteCourse(${index})">Delete</button>
+        `;
+        courseList.appendChild(div);
+      });
+    }
+
+    // Delete Course
+    function deleteCourse(index) {
+      const courses = JSON.parse(localStorage.getItem("courses") || "[]");
+      courses.splice(index, 1);
+      localStorage.setItem("courses", JSON.stringify(courses));
+      displayCourses();
+    }
+
+    // View Courses Page Activation
+    document.querySelector('a[onclick="showPage(\'courses\')"]').addEventListener('click', displayCourses);
+  </script>
+</body>
+</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>OLP - Online Learning Platform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Login Page -->
+  <section id="login" class="page">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label>Email:</label>
+      <input type="email" id="login-email" required />
+      <label>Password:</label>
+      <input type="password" id="login-password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="#" onclick="showPage('signup')">Sign Up</a></p>
+  </section>
+
+  <!-- Signup Page -->
+  <section id="signup" class="page" style="display: none;">
+    <h2>Sign Up</h2>
+    <form id="signup-form">
+      <label>Email:</label>
+      <input type="email" id="signup-email" required />
+      <label>Password:</label>
+      <input type="password" id="signup-password" required />
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="#" onclick="showPage('login')">Login</a></p>
+  </section>
+
+  <!-- Navigation -->
+  <header id="main-header" style="display: none;">
+    <h1>OLP</h1>
+    <nav>
+      <a href="#" onclick="showPage('home')">Home</a>
+      <a href="#" onclick="showPage('upload')">Upload Course</a>
+      <a href="#" onclick="showPage('courses')">View Courses</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </nav>
+  </header>
+
+  <!-- Home Page -->
+  <section id="home" class="page" style="display: none;">
+    <h2>Welcome to OLP</h2>
+    <p>Upload and view course PDFs for free!</p>
+    <button onclick="showPage('upload')">Upload Course</button>
+    <button onclick="showPage('courses')">Browse Courses</button>
+  </section>
+
+  <!-- Upload Course Page -->
+  <section id="upload" class="page" style="display: none;">
+    <h2>Upload a New Course</h2>
+    <form id="upload-form">
+      <label>Course Title:</label>
+      <input type="text" id="course-title" required />
+      <label>Select PDF File:</label>
+      <input type="file" id="course-pdf" accept="application/pdf" required />
+      <button type="submit">Upload</button>
+    </form>
+  </section>
+
+  <!-- View Courses Page -->
+  <section id="courses" class="page" style="display: none;">
+    <h2>Available Courses</h2>
+    <div id="course-list"></div>
+  </section>
+
+  <script>
+    // Optional: uncomment this line while developing to always start from login
+    // localStorage.removeItem("loggedIn");
+
+    // Show specific page
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.style.display = 'none';
+      });
+      document.getElementById(pageId).style.display = 'block';
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      document.getElementById("main-header").style.display = "none";
+      showPage("login");
+    }
+
+    // On Load
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("main-header").style.display = "block";
+      showPage("home");
+    } else {
+      showPage("login");
+    }
+
+   /* // Signup
+    document.getElementById("signup-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      if (users.some(user => user.email === email)) {
+        alert("User already exists! Please login.");
+        showPage("login");
+        return;
+      }
+
+      users.push({ email, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      alert("Signup successful! Please login.");
+      showPage("login");
+    });*/
+    document.getElementById("signup-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const email = document.getElementById("signup-email").value;
+  const password = document.getElementById("signup-password").value;
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    alert("Signup successful! Please login.");
+    showPage("login");
+  //} catch (err) {
+   // alert("Signup failed: " + err.message);
+  //}
+} catch (err) {
+  console.error("Signup error:", err); // Add this
+  res.status(500).json({ message: 'Signup error', error: err });
+}
+});
+
+    /*// Login
+    document.getElementById("login-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(user => user.email === email && user.password === password);
+
+      if (user) {
+        alert("Login successful!");
+        localStorage.setItem("loggedIn", "true");
+        document.getElementById("main-header").style.display = "block";
+        showPage("home");
+      } else {
+        alert("Invalid credentials!");
+      }
+    });*/// Login (updated to POST to backend)
+document.getElementById("login-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  try {
+    const res = await fetch("http://localhost:5000/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    alert("Login successful!");
+    localStorage.setItem("loggedIn", "true");
+    document.getElementById("main-header").style.display = "block";
+    showPage("home");
+  } catch (err) {
+    alert("Login failed: " + err.message);
+  }
+});
+
+    // Upload course
+    document.getElementById("upload-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const title = document.getElementById("course-title").value;
+      const file = document.getElementById("course-pdf").files[0];
+
+      if (!file) {
+        alert("Please select a PDF file.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        let courses = JSON.parse(localStorage.getItem("courses")) || [];
+        courses.push({ title, pdf: reader.result });
+        localStorage.setItem("courses", JSON.stringify(courses));
+        alert("Course uploaded!");
+        document.getElementById("upload-form").reset();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Display courses
+    function displayCourses() {
+      const courses = JSON.parse(localStorage.getItem("courses")) || [];
+      const courseList = document.getElementById("course-list");
+      courseList.innerHTML = "";
+
+      if (courses.length === 0) {
+        courseList.innerHTML = "<p>No courses available.</p>";
+        return;
+      }
+
+      courses.forEach((course, index) => {
+        const courseDiv = document.createElement("div");
+        courseDiv.innerHTML = `
+          <h3>${course.title}</h3>
+          <a href="${course.pdf}" target="_blank" download>Download PDF</a>
+          <button onclick="deleteCourse(${index})">Delete</button>
+          <hr>
+        `;
+        courseList.appendChild(courseDiv);
+      });
+    }
+
+    // Delete course
+    function deleteCourse(index) {
+      let courses = JSON.parse(localStorage.getItem("courses")) || [];
+      courses.splice(index, 1);
+      localStorage.setItem("courses", JSON.stringify(courses));
+      displayCourses();
+    }
+
+    // On load
+    displayCourses();
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: url('img.jpg');
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #3e5976;
+      color: white;
+      padding: 15px;
+    }
+    nav a {
+      margin: 0 10px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .page {
+      padding: 20px;
+    }
+    form {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+    input, button {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+    }
+    button {
+      background-color: #3e5976;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+
+</body>
+</html>
