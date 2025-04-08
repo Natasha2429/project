@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000"; // Adjust if port changes
+const API_URL = "https://backend-2-p36f.onrender.com"; // Adjust if port changes
 
 function showPage(pageId) {
   document.querySelectorAll(".page").forEach(p => p.style.display = "none");
