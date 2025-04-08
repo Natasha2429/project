@@ -1,4 +1,4 @@
-const API_URL = "https://backend-3-v1b6.onrender.com"; // Adjust if port changes
+const API_URL = "https://backend-3-v1b6.onrender.com/api/users"; // Adjust if port changes
 
 function showPage(pageId) {
   document.querySelectorAll(".page").forEach(p => p.style.display = "none");
